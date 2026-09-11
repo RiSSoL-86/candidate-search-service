@@ -1,0 +1,55 @@
+[project]
+name = "candidate-search-service"
+version = "0.1.0"
+description = "Application code for the candidate search service"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = []
+
+[tool.uv.workspace]
+# Each member keeps its own pyproject.toml with its own dependencies, but they share
+# one lockfile and one .venv, so local work sees everything from a single interpreter.
+# Add "services/*" here once services declare their own pyproject.toml.
+members = ["cdk"]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.16.7",
+    "mypy>=2.3.1",
+    "pre-commit>=4.2.0",
+    "pytest>=8.3.5",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["cdk", "services"]
+
+[tool.ruff]
+target-version = "py314"
+line-length = 79
+src = ["cdk", "services"]
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "F",    # pyflakes
+    "W",    # pycodestyle warnings
+    "I",    # isort
+    "UP",   # pyupgrade
+    "B",    # flake8-bugbear
+    "C4",   # flake8-comprehensions
+    "SIM",  # flake8-simplify
+    "RUF",  # ruff-specific rules
+]
+
+[tool.mypy]
+python_version = "3.14"
+mypy_path = "cdk"
+files = ["cdk", "services"]
+check_untyped_defs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_unreachable = true
+ignore_missing_imports = true
