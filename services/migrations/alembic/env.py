@@ -1,6 +1,7 @@
 from logging.config import fileConfig
 
 from alembic import context
+
 from db import engine, url
 from models import Base
 

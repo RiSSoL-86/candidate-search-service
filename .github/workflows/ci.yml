@@ -33,6 +33,22 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: test-name
+          POSTGRES_USER: test-user
+          POSTGRES_PASSWORD: test-password
+        ports:
+          - 55432:5432
+        options: >-
+          --health-cmd "pg_isready --username test-user --dbname test-name"
+          --health-interval 2s
+          --health-timeout 2s
+          --health-retries 15
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
