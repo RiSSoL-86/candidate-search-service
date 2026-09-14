@@ -9,6 +9,9 @@ __pycache__
 .cdk.staging
 cdk.out
 
+# Lambda layer build output
+layers/*/build
+
 venv
 .venv
 .env

@@ -7,10 +7,7 @@ requires-python = ">=3.14"
 dependencies = []
 
 [tool.uv.workspace]
-# Each member keeps its own pyproject.toml with its own dependencies, but they share
-# one lockfile and one .venv, so local work sees everything from a single interpreter.
-# Add "services/*" here once services declare their own pyproject.toml.
-members = ["cdk"]
+members = ["cdk", "services/*"]
 
 [dependency-groups]
 dev = [
@@ -22,6 +19,7 @@ dev = [
 
 [tool.pytest.ini_options]
 testpaths = ["cdk", "services"]
+addopts = "--ignore=cdk/cdk.out"
 
 [tool.ruff]
 target-version = "py314"
@@ -43,8 +41,9 @@ select = [
 
 [tool.mypy]
 python_version = "3.14"
-mypy_path = "cdk"
+mypy_path = "cdk,services/migrations"
 files = ["cdk", "services"]
+exclude = ["^cdk/cdk\\.out/"]
 check_untyped_defs = true
 disallow_untyped_defs = true
 disallow_incomplete_defs = true

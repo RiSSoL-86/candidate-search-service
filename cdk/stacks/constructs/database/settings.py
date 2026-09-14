@@ -5,7 +5,9 @@ from constructs import Construct
 from stacks.config import Config
 
 
-class DatabaseConstruct(Construct):
+class DatabaseSettingsConstruct(Construct):
+    """Database name, user and port put into SSM by hand before deploy."""
+
     def __init__(
         self,
         scope: Construct,
