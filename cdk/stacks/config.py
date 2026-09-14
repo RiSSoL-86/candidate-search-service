@@ -14,3 +14,7 @@ class Config:
     @property
     def layers_prefix(self) -> str:
         return f"/{self.resource_prefix}/layers"
+
+    @property
+    def s3_prefix(self) -> str:
+        return f"/{self.resource_prefix}/s3"

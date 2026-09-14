@@ -25,7 +25,7 @@ class CommonLayerStack(cdk.Stack):
         common = lambda_.LayerVersion(
             scope=self,
             id="CandidateSearchService-common-layer",
-            layer_version_name=f"{config.resource_prefix}-common",
+            layer_version_name=f"{config.resource_prefix}-common-layer",
             code=lambda_.Code.from_asset(path="../layers/common/build"),
             compatible_runtimes=[lambda_.Runtime.PYTHON_3_14],
             compatible_architectures=[lambda_.Architecture.X86_64],

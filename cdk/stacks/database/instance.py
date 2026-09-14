@@ -8,7 +8,7 @@ from stacks.config import Config
 from stacks.constructs.database.settings import DatabaseSettingsConstruct
 
 
-class DatabaseStack(cdk.Stack):
+class DatabaseInstanceStack(cdk.Stack):
     """Creates the VPC, the security group and the Postgres instance."""
 
     def __init__(
@@ -36,7 +36,7 @@ class DatabaseStack(cdk.Stack):
         # Virtual Private Cloud
         vpc = ec2.Vpc(
             scope=self,
-            id="CandidateSearchService-vpc",
+            id="CandidateSearchService-database-vpc",
             max_azs=2,
             nat_gateways=0,
             subnet_configuration=[
@@ -55,14 +55,14 @@ class DatabaseStack(cdk.Stack):
 
         ssm.StringParameter(
             scope=self,
-            id="CandidateSearchService-vpc-id",
+            id="CandidateSearchService-database-vpc-id",
             parameter_name=f"{config.database_prefix}/vpc/id",
             string_value=vpc.vpc_id,
         )
 
         ssm.StringParameter(
             scope=self,
-            id="CandidateSearchService-isolated-subnet-ids",
+            id="CandidateSearchService-database-isolated-subnet-ids",
             parameter_name=f"{config.database_prefix}/vpc/isolated-subnet-ids",
             string_value=cdk.Fn.join(
                 delimiter=",",
@@ -75,7 +75,7 @@ class DatabaseStack(cdk.Stack):
         # Security Group
         security_group = ec2.SecurityGroup(
             scope=self,
-            id="CandidateSearchService-database-sg",
+            id="CandidateSearchService-database-security-group",
             vpc=vpc,
             description="Access to the candidates Postgres instance",
             allow_all_outbound=False,
@@ -83,16 +83,16 @@ class DatabaseStack(cdk.Stack):
 
         ssm.StringParameter(
             scope=self,
-            id="CandidateSearchService-security-group-id",
+            id="CandidateSearchService-database-security-group-id",
             parameter_name=f"{config.database_prefix}/security-group/id",
             string_value=security_group.security_group_id,
         )
 
-        # PostgresDatabase
+        # Database instance
         self.database = rds.DatabaseInstance(
             scope=self,
-            id="CandidateSearchService-postgres",
-            instance_identifier=f"{config.resource_prefix}-postgres",
+            id="CandidateSearchService-database-instance",
+            instance_identifier=f"{config.resource_prefix}-database",
             engine=rds.DatabaseInstanceEngine.postgres(
                 version=rds.PostgresEngineVersion.VER_17
             ),
@@ -125,14 +125,14 @@ class DatabaseStack(cdk.Stack):
 
         ssm.StringParameter(
             scope=self,
-            id="CandidateSearchService-instance-endpoint",
+            id="CandidateSearchService-database-instance-endpoint",
             parameter_name=f"{config.database_prefix}/instance/endpoint",
             string_value=self.database.db_instance_endpoint_address,
         )
 
         ssm.StringParameter(
             scope=self,
-            id="CandidateSearchService-instance-resource-id",
+            id="CandidateSearchService-database-instance-resource-id",
             parameter_name=f"{config.database_prefix}/instance/resource-id",
             string_value=cdk.Token.as_string(
                 value=self.database.instance_resource_id

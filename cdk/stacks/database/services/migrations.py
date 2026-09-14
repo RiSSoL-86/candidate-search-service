@@ -50,7 +50,7 @@ class DatabaseMigrationsStack(cdk.Stack):
         # Virtual Private Cloud
         vpc = ec2.Vpc.from_vpc_attributes(
             scope=self,
-            id="CandidateSearchService-vpc",
+            id="CandidateSearchService-database-vpc",
             vpc_id=instance.vpc_id,
             availability_zones=cdk.Fn.get_azs(),
             isolated_subnet_ids=cdk.Fn.split(
@@ -63,15 +63,15 @@ class DatabaseMigrationsStack(cdk.Stack):
         # Security Group
         security_group = ec2.SecurityGroup.from_security_group_id(
             scope=self,
-            id="CandidateSearchService-database-sg",
+            id="CandidateSearchService-database-security-group",
             security_group_id=instance.security_group_id,
         )
 
-        # PostgresDatabase
+        # Database instance
         database = rds.DatabaseInstance.from_database_instance_attributes(
             scope=self,
-            id="CandidateSearchService-postgres",
-            instance_identifier=f"{config.resource_prefix}-postgres",
+            id="CandidateSearchService-database-instance",
+            instance_identifier=f"{config.resource_prefix}-database",
             instance_endpoint_address=instance.endpoint,
             instance_resource_id=instance.resource_id,
             port=settings.port,

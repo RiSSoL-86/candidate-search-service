@@ -5,7 +5,7 @@ from stacks.config import Config
 
 
 class DatabaseInstanceConstruct(Construct):
-    """Values DatabaseStack publishes after deploy, for other stacks."""
+    """Values DatabaseInstanceStack publishes, for other stacks to read."""
 
     def __init__(
         self,

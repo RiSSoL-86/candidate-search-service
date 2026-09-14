@@ -18,7 +18,7 @@ class LayersConstruct(Construct):
 
         self.common = lambda_.LayerVersion.from_layer_version_arn(
             scope=self,
-            id="Common",
+            id="CommonLayer",
             layer_version_arn=ssm.StringParameter.value_for_string_parameter(
                 scope=self,
                 parameter_name=f"{config.layers_prefix}/common/arn",
