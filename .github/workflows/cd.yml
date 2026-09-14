@@ -46,6 +46,9 @@ jobs:
           role-session-name: candidate-search-github
           aws-region: ${{ secrets.AWS_REGION }}
 
+      - name: Build the Lambda layers
+        run: make build.layers
+
       - name: Deploy CDK
         working-directory: cdk
         run: cdk deploy --all --require-approval never

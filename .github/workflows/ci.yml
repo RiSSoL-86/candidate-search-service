@@ -72,6 +72,9 @@ jobs:
       - name: Install CDK dependencies
         run: uv sync --locked --package cdk --no-dev
 
+      - name: Build the Lambda layers
+        run: make build.layers
+
       - name: Synthesize the stack
         working-directory: cdk
         run: cdk synth --quiet
