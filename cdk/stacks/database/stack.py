@@ -1,13 +1,16 @@
 import aws_cdk as cdk
 from aws_cdk import aws_ec2 as ec2
 from aws_cdk import aws_rds as rds
+from aws_cdk import aws_ssm as ssm
 from constructs import Construct
 
 from stacks.config import Config
-from stacks.constructs.database import DatabaseConstruct
+from stacks.constructs.database.settings import DatabaseSettingsConstruct
 
 
 class DatabaseStack(cdk.Stack):
+    """Creates the VPC, the security group and the Postgres instance."""
+
     def __init__(
         self,
         scope: Construct,
@@ -23,10 +26,10 @@ class DatabaseStack(cdk.Stack):
 
         credentials_secret_name = f"{config.database_prefix}/secret"
 
-        # Database env
-        database = DatabaseConstruct(
+        # Database settings
+        settings = DatabaseSettingsConstruct(
             scope=self,
-            construct_id="Database",
+            construct_id="DatabaseSettings",
             config=config,
         )
 
@@ -50,12 +53,39 @@ class DatabaseStack(cdk.Stack):
             ],
         )
 
+        ssm.StringParameter(
+            scope=self,
+            id="CandidateSearchService-vpc-id",
+            parameter_name=f"{config.database_prefix}/vpc/id",
+            string_value=vpc.vpc_id,
+        )
+
+        ssm.StringParameter(
+            scope=self,
+            id="CandidateSearchService-isolated-subnet-ids",
+            parameter_name=f"{config.database_prefix}/vpc/isolated-subnet-ids",
+            string_value=cdk.Fn.join(
+                delimiter=",",
+                list_of_values=vpc.select_subnets(
+                    subnet_type=ec2.SubnetType.PRIVATE_ISOLATED
+                ).subnet_ids,
+            ),
+        )
+
+        # Security Group
         security_group = ec2.SecurityGroup(
             scope=self,
             id="CandidateSearchService-database-sg",
             vpc=vpc,
             description="Access to the candidates Postgres instance",
             allow_all_outbound=False,
+        )
+
+        ssm.StringParameter(
+            scope=self,
+            id="CandidateSearchService-security-group-id",
+            parameter_name=f"{config.database_prefix}/security-group/id",
+            string_value=security_group.security_group_id,
         )
 
         # PostgresDatabase
@@ -77,11 +107,11 @@ class DatabaseStack(cdk.Stack):
             security_groups=[security_group],
             publicly_accessible=False,
             credentials=rds.Credentials.from_generated_secret(
-                username=database.user,
+                username=settings.user,
                 secret_name=credentials_secret_name,
             ),
-            database_name=database.name,
-            port=database.port,
+            database_name=settings.name,
+            port=settings.port,
             iam_authentication=True,
             allocated_storage=20,
             max_allocated_storage=100,
@@ -91,4 +121,20 @@ class DatabaseStack(cdk.Stack):
             backup_retention=cdk.Duration.days(amount=7),
             deletion_protection=True,
             removal_policy=cdk.RemovalPolicy.SNAPSHOT,
+        )
+
+        ssm.StringParameter(
+            scope=self,
+            id="CandidateSearchService-instance-endpoint",
+            parameter_name=f"{config.database_prefix}/instance/endpoint",
+            string_value=self.database.db_instance_endpoint_address,
+        )
+
+        ssm.StringParameter(
+            scope=self,
+            id="CandidateSearchService-instance-resource-id",
+            parameter_name=f"{config.database_prefix}/instance/resource-id",
+            string_value=cdk.Token.as_string(
+                value=self.database.instance_resource_id
+            ),
         )
