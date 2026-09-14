@@ -12,6 +12,9 @@ cdk.out
 # Lambda layer build output
 layers/*/build
 
+# Lambda invocation output
+response.json
+
 venv
 .venv
 .env
@@ -19,3 +22,4 @@ venv
 # IDE
 .idea
 .vscode
+/test_data/

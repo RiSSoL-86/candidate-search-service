@@ -3,13 +3,12 @@ name = "migrations"
 version = "0.1.0"
 description = "Alembic migrations for the candidate search database"
 requires-python = ">=3.14"
-# Shipped to Lambda by the `common` layer, not by this package. They are
-# declared here so that local tooling (alembic revision, mypy, the IDE)
-# sees them. Keep them in sync with layers/common/pyproject.toml.
+# Shipped by the common layer; kept in sync here so local tooling sees them.
 dependencies = [
     "alembic>=1.20.0",
     "boto3>=1.40.0",
     "psycopg[binary]>=3.3.5",
+    "pydantic-settings>=2.12.0",
     "sqlalchemy>=2.0.52",
 ]
 

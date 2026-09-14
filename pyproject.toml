@@ -4,7 +4,9 @@ version = "0.1.0"
 description = "Application code for the candidate search service"
 readme = "README.md"
 requires-python = ">=3.14"
-dependencies = []
+dependencies = [
+    "boto3-stubs~=1.43.93",
+]
 
 [tool.uv.workspace]
 members = ["cdk", "services/*"]
@@ -20,11 +22,16 @@ dev = [
 [tool.pytest.ini_options]
 testpaths = ["cdk", "services"]
 addopts = "--ignore=cdk/cdk.out"
+pythonpath = ["services/migrations"]
 
 [tool.ruff]
 target-version = "py314"
 line-length = 79
 src = ["cdk", "services"]
+
+[tool.ruff.lint.isort]
+# The Lambda ships these as top-level modules, not as an installed package.
+known-first-party = ["config", "db", "handler", "models"]
 
 [tool.ruff.lint]
 select = [
@@ -41,6 +48,8 @@ select = [
 
 [tool.mypy]
 python_version = "3.14"
+# Teaches mypy that BaseSettings fills its fields from the environment.
+plugins = ["pydantic.mypy"]
 mypy_path = "cdk,services/migrations"
 files = ["cdk", "services"]
 exclude = ["^cdk/cdk\\.out/"]
