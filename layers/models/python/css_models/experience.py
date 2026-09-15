@@ -5,10 +5,10 @@ from typing import Any
 from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from models.area import Area
-from models.base import Base
-from models.employer import Employer
-from models.resume import Resume
+from css_models.area import Area
+from css_models.base import Base
+from css_models.employer import Employer
+from css_models.resume import Resume
 
 
 class Experience(Base):

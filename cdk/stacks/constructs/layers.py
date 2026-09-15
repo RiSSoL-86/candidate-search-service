@@ -24,3 +24,11 @@ class LayersConstruct(Construct):
                 parameter_name=f"{config.layers_prefix}/common/arn",
             ),
         )
+        self.models = lambda_.LayerVersion.from_layer_version_arn(
+            scope=self,
+            id="ModelsLayer",
+            layer_version_arn=ssm.StringParameter.value_for_string_parameter(
+                scope=self,
+                parameter_name=f"{config.layers_prefix}/models/arn",
+            ),
+        )

@@ -4,7 +4,7 @@ from typing import Any
 from sqlalchemy import Integer, Numeric, String
 from sqlalchemy.orm import Mapped, mapped_column
 
-from models.base import Base
+from css_models.base import Base
 
 
 class Metro(Base):

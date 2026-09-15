@@ -6,10 +6,16 @@ readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
     "boto3-stubs~=1.43.93",
+    "common-layer",
+    "css-models",
 ]
 
 [tool.uv.workspace]
-members = ["cdk", "services/*"]
+members = ["cdk", "layers/common", "layers/models"]
+
+[tool.uv.sources]
+common-layer = { workspace = true }
+css-models = { workspace = true }
 
 [dependency-groups]
 dev = [
@@ -19,19 +25,18 @@ dev = [
     "pytest>=8.3.5",
 ]
 
-[tool.pytest.ini_options]
-testpaths = ["cdk", "services"]
-addopts = "--ignore=cdk/cdk.out"
-pythonpath = ["services/migrations"]
-
 [tool.ruff]
 target-version = "py314"
 line-length = 79
-src = ["cdk", "services"]
+src = [
+    "cdk",
+    "layers/models/python",
+    "services/ingest",
+    "services/migrations",
+]
 
 [tool.ruff.lint.isort]
-# The Lambda ships these as top-level modules, not as an installed package.
-known-first-party = ["config", "db", "handler", "models"]
+known-third-party = ["alembic"]
 
 [tool.ruff.lint]
 select = [
@@ -48,11 +53,10 @@ select = [
 
 [tool.mypy]
 python_version = "3.14"
-# Teaches mypy that BaseSettings fills its fields from the environment.
 plugins = ["pydantic.mypy"]
-mypy_path = "cdk,services/migrations"
-files = ["cdk", "services"]
-exclude = ["^cdk/cdk\\.out/"]
+mypy_path = "cdk"
+files = ["cdk", "layers/models/python"]
+exclude = ["^cdk/cdk\\.out/", "^services/migrations/alembic/versions/"]
 check_untyped_defs = true
 disallow_untyped_defs = true
 disallow_incomplete_defs = true

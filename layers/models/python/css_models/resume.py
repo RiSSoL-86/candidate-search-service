@@ -16,15 +16,15 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from models.area import Area
-from models.base import Base
-from models.enums import DriverLicenseType, ResumeType, choice
-from models.metro import Metro
-from models.owner import Owner
+from css_models.area import Area
+from css_models.base import Base
+from css_models.enums import DriverLicenseType, ResumeType, choice
+from css_models.metro import Metro
+from css_models.owner import Owner
 
 if TYPE_CHECKING:
-    from models.education import Education
-    from models.experience import Experience
+    from css_models.education import Education
+    from css_models.experience import Experience
 
 
 class Resume(Base):

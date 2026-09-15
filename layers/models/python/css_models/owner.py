@@ -4,11 +4,11 @@ from typing import TYPE_CHECKING, Any
 from sqlalchemy import SmallInteger, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from models.base import Base
-from models.enums import Gender, choice
+from css_models.base import Base
+from css_models.enums import Gender, choice
 
 if TYPE_CHECKING:
-    from models.resume import Resume
+    from css_models.resume import Resume
 
 
 class Owner(Base):
