@@ -10,8 +10,11 @@ lint:
 	uv run ruff format
 	uv run ruff check --fix
 	uv run mypy
+	uv run mypy services/ingest
+	uv run mypy services/migrations
 test:
-	uv run pytest
+	uv run pytest services/ingest
+	uv run pytest services/migrations
 synth:
 	cd cdk && cdk synth --quiet
 

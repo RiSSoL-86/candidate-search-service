@@ -2,8 +2,8 @@ from logging.config import fileConfig
 
 from alembic import context
 
+from css_models import Base
 from db import engine, url
-from models import Base
 
 config = context.config
 

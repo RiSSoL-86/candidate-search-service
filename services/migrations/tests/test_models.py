@@ -12,8 +12,8 @@ from sqlalchemy import (
 )
 from sqlalchemy.dialects.postgresql import JSONB
 
-import models
-from models import Base
+import css_models
+from css_models import Base
 
 TABLES = list(Base.metadata.sorted_tables)
 NAMES = [table.name for table in TABLES]
@@ -178,8 +178,8 @@ def test_every_model_is_exported() -> None:
     """A model missing from the package is invisible to autogenerate."""
     mapped = {mapper.class_.__name__ for mapper in Base.registry.mappers}
 
-    assert set(models.__all__) == mapped | {"Base"}
-    assert models.__all__ == sorted(models.__all__)
+    assert set(css_models.__all__) == mapped | {"Base"}
+    assert css_models.__all__ == sorted(css_models.__all__)
 
 
 def test_children_are_deleted_with_their_resume() -> None:

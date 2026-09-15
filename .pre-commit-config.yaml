@@ -32,3 +32,17 @@ repos:
         language: system
         types: [python]
         pass_filenames: false
+
+      - id: mypy-ingest
+        name: mypy ingest
+        entry: uv run mypy services/ingest
+        language: system
+        types: [python]
+        pass_filenames: false
+
+      - id: mypy-migrations
+        name: mypy migrations
+        entry: uv run mypy services/migrations
+        language: system
+        types: [python]
+        pass_filenames: false

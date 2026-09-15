@@ -4,9 +4,9 @@ from typing import Any
 from sqlalchemy import ForeignKey, SmallInteger, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from models.base import Base
-from models.enums import EducationType, choice
-from models.resume import Resume
+from css_models.base import Base
+from css_models.enums import EducationType, choice
+from css_models.resume import Resume
 
 
 class Education(Base):

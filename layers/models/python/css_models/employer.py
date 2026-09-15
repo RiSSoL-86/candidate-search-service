@@ -3,7 +3,7 @@ from typing import Any
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column
 
-from models.base import Base
+from css_models.base import Base
 
 
 class Employer(Base):

@@ -1,19 +1,16 @@
 import os
 from collections.abc import Iterator
 from functools import cache
-from pathlib import Path
 from typing import Any
 
 import pytest
-from alembic import command
-from alembic.config import Config
 from sqlalchemy import Engine, create_engine, text
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import Session
 
 # Tracing talks to the X-Ray daemon, which no test has.
 os.environ["POWERTOOLS_TRACE_DISABLED"] = "true"
-os.environ["POWERTOOLS_SERVICE_NAME"] = "migrations"
+os.environ["POWERTOOLS_SERVICE_NAME"] = "ingest"
 
 os.environ["DB_HOST"] = "localhost"
 os.environ["DB_PORT"] = "55432"
@@ -22,11 +19,15 @@ os.environ["DB_USER"] = "test-user"
 os.environ["DB_PASSWORD"] = "test-password"
 os.environ["DB_SSLMODE"] = "disable"
 
-from config import settings
-from db import engine, url
+from aws_lambda_powertools import Logger
+from sqlalchemy.orm import sessionmaker
 
-SERVICE = Path(__file__).resolve().parents[1]
-TEST_DATABASE = "candidate_search_service_test"
+from config import settings
+from css_models import Base
+from db import engine, url
+from loader import CardWriter, Loader, ResumeMapper
+
+TEST_DATABASE = "candidate_search_service_ingest_test"
 
 
 def _connect_args() -> dict[str, Any]:
@@ -84,22 +85,10 @@ def database() -> Iterator[None]:
 
 
 @pytest.fixture(scope="session")
-def alembic_config(database: None) -> Config:
-    """Alembic wired up the same way the Lambda handler wires it up."""
-    config = Config(file_=str(SERVICE / "alembic.ini"))
-    config.set_main_option(
-        name="script_location",
-        value=str(SERVICE / "alembic"),
-    )
-    return config
-
-
-@pytest.fixture(scope="session")
-def schema(alembic_config: Config) -> Iterator[Engine]:
-    """Bring the throwaway database up to head once for the whole session."""
-    command.upgrade(config=alembic_config, revision="head")
-
+def schema(database: None) -> Iterator[Engine]:
+    """Build the tables straight from the models the layer ships."""
     created = engine()
+    Base.metadata.create_all(bind=created)
     try:
         yield created
     finally:
@@ -117,3 +106,19 @@ def session(schema: Engine) -> Iterator[Session]:
         ) as opened:
             yield opened
         transaction.rollback()
+
+
+@pytest.fixture
+def loader(session: Session) -> Loader:
+    """A loader whose own transaction lands inside the test savepoint."""
+    mapper = ResumeMapper()
+
+    return Loader(
+        session_factory=sessionmaker(
+            bind=session.connection(),
+            join_transaction_mode="create_savepoint",
+        ),
+        cards=CardWriter(mapper=mapper),
+        mapper=mapper,
+        logger=Logger(service="tests"),
+    )

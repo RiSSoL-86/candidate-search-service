@@ -6,7 +6,7 @@ from stacks.config import Config
 
 
 class DatabaseSettingsConstruct(Construct):
-    """Database name, user and port put into SSM by hand before deploy."""
+    """Database name, users and port put into SSM by hand before deploy."""
 
     def __init__(
         self,
@@ -23,6 +23,14 @@ class DatabaseSettingsConstruct(Construct):
         self.user = ssm.StringParameter.value_for_string_parameter(
             scope=self,
             parameter_name=f"{config.database_prefix}/user",
+        )
+        self.migrations_user = ssm.StringParameter.value_for_string_parameter(
+            scope=self,
+            parameter_name=f"{config.database_prefix}/migrations-user",
+        )
+        self.ingest_user = ssm.StringParameter.value_for_string_parameter(
+            scope=self,
+            parameter_name=f"{config.database_prefix}/ingest-user",
         )
         self.port = cdk.Token.as_number(
             value=ssm.StringParameter.value_for_string_parameter(

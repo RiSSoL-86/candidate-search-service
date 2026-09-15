@@ -7,7 +7,7 @@ from sqlalchemy import Engine, func, select, text
 from sqlalchemy.exc import DBAPIError, IntegrityError
 from sqlalchemy.orm import Session
 
-from models import (
+from css_models import (
     Education,
     Employer,
     Experience,
@@ -15,7 +15,12 @@ from models import (
     Owner,
     Resume,
 )
-from models.enums import DriverLicenseType, EducationType, Gender, ResumeType
+from css_models.enums import (
+    DriverLicenseType,
+    EducationType,
+    Gender,
+    ResumeType,
+)
 
 DOWNLOADED = datetime(2026, 9, 14, 12, 0, tzinfo=UTC)
 
